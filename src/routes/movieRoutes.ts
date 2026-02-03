@@ -1,6 +1,7 @@
 import express, {Router} from 'express';
 
 import {getMovies, createMovie, updateMovie, deleteMovie} from '../controllers/moviesController';
+// import {getMovies, createMovie} from '../controllers/moviesController';
 
 const router: Router = express.Router();
 
