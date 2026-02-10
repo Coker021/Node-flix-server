@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMovie = exports.getMovies = void 0;
+exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovies = void 0;
 // Movie Model ref
 const movie_1 = __importDefault(require("../models/movie"));
 // interface Movie{
@@ -34,24 +34,27 @@ const createMovie = async (req, res) => {
     return res.status(201).json(); // 201: Resource Created
 };
 exports.createMovie = createMovie;
-// //PUT
-// export const updateMovie = (req: Request, res: Response) => {
-//     //find movie in array by id
-//     const index: number = movies.findIndex(m => m.id == req.params.id);
-//     if (index === -1){
-//         return res.status(404).json({'error': 'Not found'});
-//     }
-//     movies[index].title = req.body.title;
-//     movies[index].year = req.body.year;
-//     return res.status(204).json(); //204:OK, No Content
-// }
-// //DELETE
-// export const deleteMovie = (req: Request, res: Response) => {
-//     //find movie in array by id
-//     const index: number = movies.findIndex(m => m.id == req.params.id);
-//     if (index === -1){
-//         return res.status(404).json({'error': 'Not found'});
-//     }
-//     movies.splice(index, 1);
-//     return res.status(204).json(); //204: OK, no Content 
-// }
+//PUT
+const updateMovie = async (req, res) => {
+    // check if id is valid
+    const movie = await movie_1.default.findById(req.params.id);
+    if (!movie) {
+        return res.status(404).json({ 'error': 'Movie not found' });
+    }
+    //find mongoose to update movie 
+    await movie_1.default.findByIdAndUpdate(req.params.id, req.body);
+    return res.status(204).json(); //204:OK, No Content
+};
+exports.updateMovie = updateMovie;
+//DELETE
+const deleteMovie = async (req, res) => {
+    // check if the id is valid
+    const movie = await movie_1.default.findById(req.params.id);
+    if (!movie) {
+        return res.status(404).json({ 'error': 'Movie not found' });
+    }
+    //use mongoose to delete movie based on id param in URL
+    await movie_1.default.findByIdAndDelete(req.params.id);
+    return res.status(204).json(); //204: OK, no Content 
+};
+exports.deleteMovie = deleteMovie;

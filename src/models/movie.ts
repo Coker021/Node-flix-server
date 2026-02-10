@@ -5,7 +5,36 @@ interface IMovie{
     genre: string;
     rating: number;
     duration: number;
+    reviews: IReview[];
 }
+interface IReview {
+    reviewer: string;
+    reviewText: string;
+    rating: number;
+    date: Date;
+}
+const ReviewSchema = new Schema<IReview>({
+    reviewer: {
+        type: String,
+        required: [true, 'Reviewer Required'],
+        trim: true
+    },
+    reviewText: {
+        type: String,
+        required: [true, 'Review Text Required'],
+        trim: true
+    },
+    rating: {
+        type: Number,
+        required: [true, 'Rating required'],
+        min: 0,
+        max: 10
+    },
+    date:{
+        type: Date,
+        default: Date.now
+    }
+});
 const MovieSchema = new Schema<IMovie>({
     title:{
         type: String,
@@ -27,7 +56,8 @@ const MovieSchema = new Schema<IMovie>({
     duration:{
         type: Number,
         min: 1
-    }
+    },
+    reviews: [ReviewSchema]
 });
 
 // make model public. As it's a mongoose mmodel it inherits the mongoose CRUD methods

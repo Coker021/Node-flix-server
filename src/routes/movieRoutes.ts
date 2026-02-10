@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 
-import {getMovies, createMovie, updateMovie, deleteMovie} from '../controllers/moviesController';
+import {getMovies, createMovie, updateMovie, deleteMovie, createReview} from '../controllers/moviesController';
 // import {getMovies, createMovie} from '../controllers/moviesController';
 
 const router: Router = express.Router();
@@ -15,7 +15,10 @@ router.post('/', createMovie);
 router.put('/:id', updateMovie);
 
 // DELETE
-router.delete('/:id', deleteMovie)
+router.delete('/:id', deleteMovie);
+
+// POST
+router.post('/:id/reviews', createReview)
 
 //MAKE ROUTER PUBLIC
 export default router;
