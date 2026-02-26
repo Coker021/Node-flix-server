@@ -30,7 +30,7 @@ const options = {
             version: '1.0.0'
         }
     },
-    apis: ['.dist/controllers/*.js'] // location of api methods
+    apis: ['./dist/controllers/*.js'] // location of api methods
 };
 
 // create new document using options above
