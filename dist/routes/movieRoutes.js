@@ -15,5 +15,9 @@ router.post('/', moviesController_1.createMovie);
 router.put('/:id', moviesController_1.updateMovie);
 // DELETE
 router.delete('/:id', moviesController_1.deleteMovie);
+// GET
+router.get('/:id', moviesController_1.getMovie);
+// POST
+router.post('/:id/reviews', moviesController_1.createReview);
 //MAKE ROUTER PUBLIC
 exports.default = router;

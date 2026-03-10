@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 
-import {getMovies, createMovie, updateMovie, deleteMovie, createReview} from '../controllers/moviesController';
+import {getMovies, createMovie, updateMovie, deleteMovie, getMovie, createReview} from '../controllers/moviesController';
 // import {getMovies, createMovie} from '../controllers/moviesController';
 
 const router: Router = express.Router();
@@ -16,6 +16,9 @@ router.put('/:id', updateMovie);
 
 // DELETE
 router.delete('/:id', deleteMovie);
+
+// GET
+router.get('/:id', getMovie);
 
 // POST
 router.post('/:id/reviews', createReview)
