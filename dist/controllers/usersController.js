@@ -9,7 +9,7 @@ const register = async (req, res) => {
     try {
         // duplicate username check
         const duplicateUser = await user_1.default.findOne({ username: req.body.username });
-        if (!duplicateUser)
+        if (duplicateUser)
             throw new Error('Username already exists');
         // manual password length check, passport ignores model validation
         if (req.body.password.length < 8)
