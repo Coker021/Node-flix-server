@@ -8,7 +8,10 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const passport_1 = __importDefault(require("passport"));
 const movieRoutes_1 = __importDefault(require("./routes/movieRoutes"));
+const usersRoutes_1 = __importDefault(require("./routes/usersRoutes"));
+const user_1 = __importDefault(require("./models/user"));
 const app = (0, express_1.default)();
 // express app config
 app.use(body_parser_1.default.json()); //
@@ -16,6 +19,13 @@ app.use(body_parser_1.default.json()); //
 mongoose_1.default.connect(process.env.DB, {})
     .then((response) => console.log('connected to MongoDB'))
     .catch((error) => console.log(`Connection failed: ${error}`));
+// passport config for auth
+app.use(passport_1.default.initialize());
+// defaults to local strategy => users in our own db
+passport_1.default.use(user_1.default.createStrategy());
+// session mgmt => read/write user data to / from session
+passport_1.default.serializeUser(user_1.default.serializeUser());
+passport_1.default.deserializeUser(user_1.default.deserializeUser());
 app.listen(4000, () => {
     console.log('Express API running on port 4000');
 });
@@ -46,3 +56,4 @@ app.get('/api-docs', (req, res) => {
 });
 // api routing
 app.use('/api/v1/movies', movieRoutes_1.default);
+app.use('/api/v1/users', usersRoutes_1.default);
