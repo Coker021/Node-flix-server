@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import passport from 'passport';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import cookieParser from 'cookie-parser';
 
 
 import moviesRouter from './routes/movieRoutes';
@@ -13,7 +15,8 @@ import User from './models/user';
 const app: Application = express();
 
 // express app config
-app.use(bodyParser.json()); //
+app.use(bodyParser.json()); // parse request body as JSON
+app.use(cookieParser()); // needed to read cookies w/jwt in http requests
 
 //mongodb connection
 mongoose.connect(process.env.DB, {})
@@ -29,6 +32,29 @@ passport.use(User.createStrategy());
 // session mgmt => read/write user data to / from session
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+// wt config
+const jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.PASSPORT_sECRET
+};
+
+const strategy = new Strategy(jwtOptions, async (jwtPayload, callback) => {
+    try {
+        // decrypt jwt and check contents
+        const user = await User.findById(jwtPayload.id);
+
+        if (!user) throw new Error('Invalid user id in token');
+
+        return callback(null,user);
+    }
+    catch (error){
+        // if error, return error but no user info
+        return callback(error, null);
+    }
+});
+
+passport.use(strategy);
 
 app.listen(4000, () => {
     console.log('Express API running on port 4000')

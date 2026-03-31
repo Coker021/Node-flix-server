@@ -2,26 +2,29 @@ import express, {Router} from 'express';
 
 import {getMovies, createMovie, updateMovie, deleteMovie, getMovie, createReview} from '../controllers/moviesController';
 // import {getMovies, createMovie} from '../controllers/moviesController';
+import { verifyToken } from '../middleware/auth';
 
 const router: Router = express.Router();
 
+// public methods
 // GET
 router.get('/', getMovies);
-
-// POST
-router.post('/', createMovie);
-
-// PUT
-router.put('/:id', updateMovie);
-
-// DELETE
-router.delete('/:id', deleteMovie);
 
 // GET
 router.get('/:id', getMovie);
 
+// private methods
 // POST
-router.post('/:id/reviews', createReview)
+router.post('/', verifyToken, createMovie);
+
+// PUT
+router.put('/:id', verifyToken, updateMovie);
+
+// DELETE
+router.delete('/:id', verifyToken, deleteMovie);
+
+// POST
+router.post('/:id/reviews', verifyToken, createReview)
 
 //MAKE ROUTER PUBLIC
 export default router;

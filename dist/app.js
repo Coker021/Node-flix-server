@@ -9,12 +9,15 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const passport_1 = __importDefault(require("passport"));
+const passport_jwt_1 = require("passport-jwt");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const movieRoutes_1 = __importDefault(require("./routes/movieRoutes"));
 const usersRoutes_1 = __importDefault(require("./routes/usersRoutes"));
 const user_1 = __importDefault(require("./models/user"));
 const app = (0, express_1.default)();
 // express app config
-app.use(body_parser_1.default.json()); //
+app.use(body_parser_1.default.json()); // parse request body as JSON
+app.use((0, cookie_parser_1.default)()); // needed to read cookies w/jwt in http requests
 //mongodb connection
 mongoose_1.default.connect(process.env.DB, {})
     .then((response) => console.log('connected to MongoDB'))
@@ -26,6 +29,25 @@ passport_1.default.use(user_1.default.createStrategy());
 // session mgmt => read/write user data to / from session
 passport_1.default.serializeUser(user_1.default.serializeUser());
 passport_1.default.deserializeUser(user_1.default.deserializeUser());
+// wt config
+const jwtOptions = {
+    jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.PASSPORT_sECRET
+};
+const strategy = new passport_jwt_1.Strategy(jwtOptions, async (jwtPayload, callback) => {
+    try {
+        // decrypt jwt and check contents
+        const user = await user_1.default.findById(jwtPayload.id);
+        if (!user)
+            throw new Error('Invalid user id in token');
+        return callback(null, user);
+    }
+    catch (error) {
+        // if error, return error but no user info
+        return callback(error, null);
+    }
+});
+passport_1.default.use(strategy);
 app.listen(4000, () => {
     console.log('Express API running on port 4000');
 });
